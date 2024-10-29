@@ -1,7 +1,13 @@
+import {Storage} from "./storage.js";
 class Db{
-     #hash = new Array(1333);
-     constructor() {
-         this.#randomExpire()
+     static storage =new Storage('memory.txt')
+     #storeService;
+     #hash;
+     constructor(Storage) {
+         this.#storeService = Storage;
+         this.#hash = this.#storeService.readStorage().toString().split(',');
+
+         // this.#randomExpire()
      }
      hashing(str){
             let hash = 5381;
@@ -19,6 +25,7 @@ class Db{
         const hash = this.hashing(key);
         val.duration = duration;
         this.#hash[hash] = val;
+        this.#storeService.updateStorage(this.parseData(this.#hash));
         return hash;
     }
      get(key){
@@ -35,6 +42,7 @@ class Db{
         return this.#hash.splice(hash, 1);
      }
      get view(){
+         console.log(this.#hash)
         let values ='';
         for(let i in this.#hash){
             values += JSON.stringify(this.#hash[i]);
@@ -62,20 +70,21 @@ class Db{
             this.#hash.splice(index, 1);
         }
      }
+
+     parseData(data = []){
+         return  JSON.stringify(data.join(","))
+     }
 }
 
+const storage = Db.storage;
+const db = new Db(storage);
 
-const db = new Db();
-const first = db.add({key: 'Jamshid', val: {name: 'Jamshid', age:23, height:176}, exp: 14000});
-const second = db.add({key: 'Rasul', val: {name: 'Rasul', age:26, height:183}});
-
-// console.log(first);
-// console.log(db.get('Jamshid'));
-// console.log(db.get('Rasul'));
-// // db.delete('Jamshid')
-// console.log(db.get('Jamshid'));
-// // //
 // db.view;
+
+db.add({key: 'xurshid', val: {name: 'xurshid', age:'26', height: 185}});
+const value = db.get('xurshid');
+
+console.log(value);
 
 
 
