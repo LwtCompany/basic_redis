@@ -1,11 +1,11 @@
 import {Storage} from "./storage.js";
 class Db{
-     static storage =new Storage('memory.txt')
+     static storage = new Storage('memory.txt')
      #storeService;
      #hash;
      constructor(Storage) {
          this.#storeService = Storage;
-         this.#hash = this.#storeService.readStorage().toString().split(',');
+         this.#hash = this.#storeService.readStorage();
 
          // this.#randomExpire()
      }
@@ -25,12 +25,14 @@ class Db{
         const hash = this.hashing(key);
         val.duration = duration;
         this.#hash[hash] = val;
-        this.#storeService.updateStorage(this.parseData(this.#hash));
+        this.#storeService.updateStorage(this.#hash);
         return hash;
     }
      get(key){
         const hash = this.hashing(key);
         const item =  this.#hash[hash];
+        console.log(hash);
+        console.log(this.#hash[item])
          const currentTime = new Date().getTime();
         if(item && currentTime <= item?.duration){
             return item
@@ -71,9 +73,6 @@ class Db{
         }
      }
 
-     parseData(data = []){
-         return  JSON.stringify(data.join(","))
-     }
 }
 
 const storage = Db.storage;
@@ -81,9 +80,9 @@ const db = new Db(storage);
 
 // db.view;
 
-db.add({key: 'xurshid', val: {name: 'xurshid', age:'26', height: 185}});
+// db.add({key: 'xurshid', val: {name: 'xurshid', age:'26', height: 185}});
 const value = db.get('xurshid');
-
+//
 console.log(value);
 
 

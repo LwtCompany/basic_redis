@@ -1,4 +1,5 @@
 import fs from 'fs';
+
 export class Storage {
     file;
     constructor(fileName) {
@@ -7,12 +8,12 @@ export class Storage {
     }
 
     checkOrCreateStorage(name) {
-             fs.access(this.file, (err, data) => {
+         const fileName = name ?? this.file;
+             fs.access(fileName, (err, data) => {
                  if (err?.code === 'ENOENT') {
-                     const data = new Array(1333).join(",");
-                     fs.appendFile(name, data, (err, data) => {
+                     fs.appendFile(fileName,'',(err, data) => {
                          if (err) {
-                             console.log(`Error: while creating file ${err}`);
+                             console.error(err);
                          }
                      });
                  }
@@ -23,25 +24,31 @@ export class Storage {
      readStorage(name=null) {
         const fileName = name ?? this.file;
 
-        return  fs.readFileSync(fileName, "utf-8", (err, data) => {
+        const data = fs.readFileSync(fileName, "utf-8", (err, data) => {
             if (err) {
                 throw err;
             }
             return data;
         });
-
+      return data ? JSON.parse(data) : [];
     }
 
     updateStorage(data = [], name=null) {
-         const fileName = name ?? this.file;
-        fs.writeFileSync(fileName, data, (err, data) => {
+        const fileName = name ?? this.file;
+        fs.writeFileSync(fileName, JSON.stringify(data, null, 2), 'utf-8', (err, data) => {
             if (err) {
-                throw err;
-            }else{
-                console.log('Storage updated');
+                console.error(err);
+            }else {
+                console.log('data updated');
             }
         });
     }
 }
 
-const storage = new Storage('memory.txt');
+// const storage = new Storage('memory.txt');
+//
+// const newEntry = { key: 'example', value: 'newValue' };
+// const data = storage.readStorage();
+// data.push(newEntry);
+// storage.updateStorage(data);
+// // console.log(storage.readStorage('memory.txt'));
