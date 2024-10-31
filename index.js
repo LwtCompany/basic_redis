@@ -29,27 +29,37 @@ class Db{
         return hash;
     }
      get(key){
+
         const hash = this.hashing(key);
         const item =  this.#hash[hash];
-        console.log(hash);
-        console.log(this.#hash[item])
-         const currentTime = new Date().getTime();
+
+        const currentTime = new Date().getTime();
+
         if(item && currentTime <= item?.duration){
             return item
+        }else{
+            this.delete(key);
+            console.log(`Sorry you have not this element by key ${key}`)
         }
-        console.log(`Sorry you have not this element by key ${key}`)
     }
      delete(key){
         const hash = this.hashing(key);
-        return this.#hash.splice(hash, 1);
+        const deleted = this.#hash.splice(hash, 1);
+        this.#storeService.updateStorage(this.#hash);
+
+        return deleted;
      }
      get view(){
-         console.log(this.#hash)
         let values ='';
         for(let i in this.#hash){
-            values += JSON.stringify(this.#hash[i]);
+          if (this.#hash[i] && typeof this.#hash[i] === 'object' && !Array.isArray(this.#hash[i])){
+                  values +=`${i} = `+ JSON.stringify(this.#hash[i])+"\n";
+          }
+
         }
-         console.log(values)
+
+        let response = values.length > 0 ? values : 'your memory is empty!';
+        console.log(response);
      }
      #setExpire(exp, key){
          new Promise((resolve, reject) => {
@@ -78,12 +88,16 @@ class Db{
 const storage = Db.storage;
 const db = new Db(storage);
 
-// db.view;
+db.view;
 
-// db.add({key: 'xurshid', val: {name: 'xurshid', age:'26', height: 185}});
-const value = db.get('xurshid');
-//
-console.log(value);
+// db.add({key: 'xurshid1', val: {name: 'xurshid1', age:'26', height: 185}});
+// db.add({key: 'xurshid2', val: {name: 'xurshid2', age:'26', height: 185}});
+// db.add({key: 'xurshid3', val: {name: 'xurshid3', age:'26', height: 185}});
+// db.add({key: 'xurshid4', val: {name: 'xurshid4', age:'26', height: 185}});
+// db.add({key: 'xurshid5', val: {name: 'xurshid5', age:'26', height: 185}});
+// db.add({key: 'xurshid6', val: {name: 'xurshid6', age:'26', height: 185}});
+// console.log(db.get('xurshid'));
+
 
 
 
